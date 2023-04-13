@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: demo
+  namespace: argo-cd
+spec:
+  destination:
+    namespace: default
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: 1-krm-embedded/kustomize-wrapper
+    repoURL: https://github.com/nokia/argocd-krm-plugin-examples
+    targetRevision: main
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - PruneLast=true

@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ConfigManagementPlugin
+metadata:
+  name: cmp-plugin
+spec:
+  version: v1.0
+  init:
+    # Init always happens immediately before generate, but its output is not treated as manifests.
+    # This is a good place to, for example, download chart dependencies.
+    command: ["bash", "-c", 'echo "Initializing..."']
+  generate:
+    command: ["bash", "-c",]
+    args: ['kustomize build --enable-helm --enable-exec --enable-alpha-plugins']
+  discover:
+    fileName: "sha256sumTransformer.yaml"

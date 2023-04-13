@@ -1,0 +1,14 @@
+apiVersion: blabla
+kind: Sha256sumTransformer
+metadata:
+  name: foobar
+  annotations:
+    config.kubernetes.io/function: |
+      exec: 
+        path: plugins/sha256sum-transformer.sh
+spec:
+    files:
+    - ../files
+    annotation: "goovyChecksum"
+    kind:
+    - Deployment

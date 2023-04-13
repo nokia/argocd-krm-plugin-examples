@@ -1,0 +1,55 @@
+crds:
+  install: true
+redis-ha:
+  enabled: true
+repoServer:
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+  extraContainers:
+    - name: cmp
+      command: [/var/run/argocd/argocd-cmp-server] # Entrypoint should be Argo CD lightweight CMP server i.e. argocd-cmp-server
+      image: heyleke/argocd-kube-tools-plugin:0.0.2
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+      env:
+        # If your plugin uses helm, the following environment variables must point to an existing directory on the sidecar container
+        - name: HELM_CACHE_HOME
+          value: /helm-working-dir
+        - name: HELM_CONFIG_HOME
+          value: /helm-working-dir
+        - name: HELM_DATA_HOME
+          value: /helm-working-dir
+      volumeMounts:
+        - name: var-files
+          mountPath: /var/run/argocd
+        - name: plugins
+          mountPath: /home/argocd/cmp-server/plugins
+        - name: cmp-tmp
+          mountPath: /tmp
+        - name: helm-temp-dir
+          mountPath: /helm-working-dir
+  volumes:
+    - name: cmp-tmp
+      emptyDir: {}
+    # To make the sidecar container more stateless/ephemeral avoid to reuse the helm-working-dir volume
+    - name: helm-temp-dir
+      emptyDir: {}
+server:
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+  extensions:
+    contents:
+    - name: argo-rollouts
+      url: https://github.com/argoproj-labs/rollout-extension/releases/download/v0.3.0/extension.tar
+    enabled: true
+    image:
+      imagePullPolicy: IfNotPresent
+      repository: ghcr.io/argoproj-labs/argocd-extensions
+      tag: v0.1.0
+  extraArgs:
+  - --insecure
+  ingress:
+    enabled: false

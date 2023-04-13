@@ -1,0 +1,33 @@
+content of this repo:
+
+1-krm-embedded:
+
+* kustomize-wrapper: kustomize wrapper around 'demo' chart (included for simplicity reasons (no push to registry needed)
+  * has a 'KRM exec function' to tranform and include checksum of all files in ../files/
+* files: set of dummy files
+* demo-wrapper-app.yaml: argocd-manifest, pointing to this repo's demo-wrapper-kustomize
+  * requires an Argo CD deployment with yq added to repo-server
+  * requires Argo CD to be configured to allow KRM exec functions:
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argo-cd
+data:
+  kustomize.buildOptions: --enable-helm --enable-alpha-plugins --enable-exec
+
+2-krm-plugin:
+
+* kustomize-wrapper: same wrapper around demo chart
+  * has a KRM exec fucntion in python
+  * function is embedded in Argo CD CMP
+
+* plugin:
+  * the Argo CD plugin capable of running KRM functions (using kustomize)
+  * helm values that can be used to deploy argo CD (chart version 5.16.2) with plugin enabled
+  * plugin.yaml: configuration of the plugin
+
+3-krm-argo-workflow:
+
+* POC work to show how Argo Workflows could be used to run KRM functions in chained containers

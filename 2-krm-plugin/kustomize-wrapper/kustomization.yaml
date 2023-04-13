@@ -1,0 +1,6 @@
+helmCharts:
+- name: demo
+  releaseName: my-demo
+  namespace: default
+transformers:
+- sha256sumTransformer.yaml
